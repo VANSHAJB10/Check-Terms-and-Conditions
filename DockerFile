@@ -1,11 +1,41 @@
-FROM python:3.9
-
-COPY . /app
+FROM python:3.9-slim
+# Using slim version of python image to keep the image size small
 
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    #prevents Python from writing pyc files to disc
+    PIP_NO_CACHE_DIR=1 \
+    #prevents pip from caching packages
+    STREAMLIT_SERVER_PORT=8501 \
+    #default port for streamlit
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    #disable pip version check to save build time wasted in unnecessary checks and warnings
+    PIP_DEFAULT_TIMEOUT=100
+    #increase pip timeout to prevent random failures on slow connections as some packages take longer to download
 
-EXPOSE 8500
+# Install system dependencies and then clean up because after installation they are not needed anymore
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
-CMD streamlit run app.py --server.port 8500 --server.address
+
+COPY requirements.txt .
+#utilizing layer caching for faster rebuilds
+
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir --upgrade pip
+# --no-cache-dir flag ensures that pip does not store the downloaded packages in cache
+
+COPY app.py .
+
+EXPOSE 8501
+
+CMD ["streamlit", "run", "app.py", \
+    "--server.port=8501", "--server.address=0.0.0.0", \
+    "--server.headless=true", \
+    #prevent streamlit from automatically opening a browser window
+    "--browser.serverAddress=0.0.0.0", \
+    "--browser.gatherUsageStats=false"]
