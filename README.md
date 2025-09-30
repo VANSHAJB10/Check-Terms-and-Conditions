@@ -2,6 +2,11 @@
 
 > **An intelligent AI-powered application that analyzes Terms & Conditions documents to protect your privacy by identifying risks, permissions, and security concerns before you click "Accept".**
 
+## Running Application
+![Paste T&C](https://github.com/VANSHAJB10/Check-Terms-and-Conditions/blob/main/assets/6239857736535885721.jpg)
+
+![Output](https://github.com/VANSHAJB10/Check-Terms-and-Conditions/blob/main/assets/6239857736535885720.jpg)
+
 ## Overview
 
 The <b>"Terms & Conditions Privacy Analyzer"</b> addresses a critical digital privacy problem: 
